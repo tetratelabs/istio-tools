@@ -1,0 +1,1 @@
+A simple plugin that logs the xDS payload to stdout to show how a plugin might work.
