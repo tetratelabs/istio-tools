@@ -69,8 +69,6 @@ func (s *server_kiss) StreamAggregatedResources(stream ads.AggregatedDiscoverySe
 			return err
 		}
 	}
-
-	return nil
 }
 
 // converts Type URLs from Envoy requests into our EventType representation
