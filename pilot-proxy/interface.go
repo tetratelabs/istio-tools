@@ -18,6 +18,8 @@ const (
 )
 
 type Plugin interface {
+	// Name of this plugin. Used for logging and metrics.
+	Name() string
 	// Apply transformations to the response in-place, or return an error which will be forwarded to the client Envoy.
 	//
 	// Apply must be thread-safe: multiple goroutines will call Apply concurrently on the same Plugin instance.

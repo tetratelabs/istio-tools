@@ -12,6 +12,10 @@ type Plugin struct{}
 
 var _ pilotproxy.Plugin = Plugin{}
 
+func (Plugin) Name() string {
+	return "log"
+}
+
 func (Plugin) Apply(response *xds.DiscoveryResponse) error {
 	log.Printf("received response with payload: %v", response)
 	return nil
