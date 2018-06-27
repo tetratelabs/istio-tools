@@ -23,6 +23,9 @@
     "envoy/api/v2/endpoint",
     "envoy/api/v2/listener",
     "envoy/api/v2/route",
+    "envoy/config/filter/accesslog/v2",
+    "envoy/config/filter/http/transcoder/v2",
+    "envoy/config/filter/network/http_connection_manager/v2",
     "envoy/service/discovery/v2",
     "envoy/type"
   ]
@@ -42,6 +45,7 @@
   name = "github.com/gogo/protobuf"
   packages = [
     "gogoproto",
+    "jsonpb",
     "proto",
     "protoc-gen-gogo/descriptor",
     "sortkeys",
@@ -268,6 +272,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7dfc9dbb18f3c0fb587a95a075357165b896435d75b118501330e43f5583c7d2"
+  inputs-digest = "7be02546e96057c3ac6314ea736fa5db328fa8fed55b1a948f6ea98423dff7af"
   solver-name = "gps-cdcl"
   solver-version = 1
