@@ -31,10 +31,10 @@ spec:
     filterName: envoy.grpc_json_transcoder
     filterType: HTTP
     filterConfig:
-      services: {{ range .ProtoServices }} 
-      - {{ . }}{{end}}
       protoDescriptorBin: !!binary |
         {{ .DescriptorBinary }}
+      services: {{ range .ProtoServices }} 
+      - {{ . }}{{end}}
 `))
 
 func main() {
