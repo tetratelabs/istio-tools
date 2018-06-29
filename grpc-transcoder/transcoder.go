@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"log"
+
 	xds "github.com/envoyproxy/go-control-plane/envoy/api/v2"
 	xdscore "github.com/envoyproxy/go-control-plane/envoy/api/v2/core"
 	transcoder "github.com/envoyproxy/go-control-plane/envoy/config/filter/http/transcoder/v2"
@@ -54,7 +56,12 @@ func (p *Plugin) Name() string {
 }
 
 func (p *Plugin) Apply(node *xdscore.Node, response *xds.DiscoveryResponse) error {
-	if !p.targetClusters[node.Cluster] || response.TypeUrl != pilotproxy.ListenerType {
+	if !p.targetClusters[node.Cluster] {
+		log.Printf("did not match cluster %q against targets: %v", node.Cluster, p.targetClusters)
+		return nil
+	}
+
+	if response.TypeUrl != pilotproxy.ListenerType {
 		return nil
 	}
 

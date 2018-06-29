@@ -44,11 +44,10 @@ func main() {
 		"The address this server will listen on; e.g. :29000. If no host is provided then the server will listen across of the host's IP addresses.")
 	cmd.PersistentFlags().StringVarP(&serviceName, "name", "n", "pilot-proxy", "The name of this service for tracing, metrics.")
 
-	cmd.PersistentFlags().StringArrayVarP(&services, "services", "s", []string{},
-		"The Istio services whose sidecars this proxy should insert gRPC transcoding filters into.")
-
-	cmd.PersistentFlags().StringArrayVarP(&protoServices, "proto-services", "p", []string{},
-		"The proto service names contained in the descriptor files. These must be fully qualified names, i.e. package_name.service_name")
+	cmd.PersistentFlags().StringSliceVarP(&services, "services", "s", []string{},
+		"Comma separated list of Istio services whose sidecars this proxy should insert gRPC transcoding filters into.")
+	cmd.PersistentFlags().StringSliceVarP(&protoServices, "proto-services", "p", []string{},
+		"Comma separated list of the proto service names contained in the descriptor files. These must be fully qualified names, i.e. package_name.service_name")
 	cmd.PersistentFlags().StringVarP(&descriptorFilePath, "descriptor", "d", "", "Location of proto descriptor files relative to the server.")
 
 	if err := cmd.Execute(); err != nil {
