@@ -1,2 +1,2 @@
 istio-*
-gen-envoyfilter
+gen-grpc-transcoder
