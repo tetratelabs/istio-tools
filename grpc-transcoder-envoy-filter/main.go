@@ -6,24 +6,17 @@ import (
 	"os"
 	"text/template"
 	"encoding/base64"
-	"bytes"
 
-	xcoder "github.com/envoyproxy/go-control-plane/envoy/config/filter/http/transcoder/v2"
-	"istio.io/api/networking/v1alpha3"
 	"github.com/spf13/cobra"
-	"github.com/gogo/protobuf/jsonpb"
-	"github.com/ghodss/yaml"
-	"github.com/gogo/protobuf/types"
-	"fmt"
 )
 
 
 
-var _ = template.Must(template.New("grpc json transcoder filter").Parse(`
+var tmpl = template.Must(template.New("grpc json transcoder filter").Parse(`
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
-  name: inventory-grpc-transcoder
+  name: {{ .ServiceName }}-grpc-transcoder
 spec:
   workloadLabels:
     app: {{ .ServiceName }}
@@ -45,7 +38,6 @@ spec:
 `))
 
 func main() {
-	// TODO: flags to disable jaeger/prom
 	var (
 		service            string
 		protoServices      []string
@@ -55,61 +47,20 @@ func main() {
 
 	cmd := &cobra.Command{
 		Short:   "gen-envoyfilter",
-		Example: "gen-envoyfilter --port 80 --service inventory --proto-services foo.v1.Service,bar.v2.Service --descriptor ./path/to/descriptor",
+		Example: "gen-envoyfilter --port 80 --service foo --proto-services foo.v1.Service,bar.v2.Service --descriptor ./path/to/descriptor",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			descriptorBytes, err := ioutil.ReadFile(descriptorFilePath)
 			if err != nil {
 				return err
 			}
-
-			b := &bytes.Buffer{}
-			b.Bytes()
 			encoded := base64.StdEncoding.EncodeToString(descriptorBytes)
-
-			filter := &xcoder.GrpcJsonTranscoder{
-				DescriptorSet:             &xcoder.GrpcJsonTranscoder_ProtoDescriptorBin{
-					ProtoDescriptorBin: []byte(encoded),
-				},
-				Services:                  protoServices,
-				MatchIncomingRequestRoute: false,
+			params := map[string]interface{}{
+				"ServiceName":      service,
+				"PortNumber":       port,
+				"DescriptorBinary": encoded,
+				"ProtoServices":    protoServices,
 			}
-			tmp := &bytes.Buffer{}
-			marshaller := &jsonpb.Marshaler{OrigName: true}
-			if err := marshaller.Marshal(tmp, filter); err != nil {
-				return err
-			}
-
-			s := &types.Struct{}
-			if err := jsonpb.Unmarshal(tmp, s); err != nil {
-				return nil
-			}
-
-			json, err :=  marshaller.MarshalToString(&v1alpha3.EnvoyFilter{
-				WorkloadLabels: map[string]string{
-					"app": service,
-				},
-				Filters: []*v1alpha3.EnvoyFilter_Filter{
-					{
-						ListenerMatch:  &v1alpha3.EnvoyFilter_ListenerMatch{
-							PortNumber:       9080,
-							ListenerType:     v1alpha3.EnvoyFilter_ListenerMatch_SIDECAR_INBOUND,
-						},
-						InsertPosition: &v1alpha3.EnvoyFilter_InsertPosition{
-							Index:      v1alpha3.EnvoyFilter_InsertPosition_AFTER,
-							RelativeTo: "envoy.router",
-						},
-						FilterType:     v1alpha3.EnvoyFilter_Filter_HTTP,
-						FilterName:     "envoy.grpc_json_transcoder",
-						FilterConfig:   s,
-					},
-				},
-			})
-			out, err := yaml.JSONToYAML([]byte(json))
-			if err != nil {
-				return err
-			}
-			_, err = fmt.Fprint(os.Stdout, string(out))
-			return err
+			return tmpl.Execute(os.Stdout, params)
 		},
 	}
 
