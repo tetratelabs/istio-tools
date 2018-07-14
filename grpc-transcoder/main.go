@@ -1,16 +1,18 @@
 package main
 
 import (
+	"encoding/base64"
 	"io/ioutil"
 	"log"
 	"os"
+	"regexp"
 	"text/template"
-	"encoding/base64"
+
+	"github.com/golang/protobuf/proto"
+	descriptor "github.com/golang/protobuf/protoc-gen-go/descriptor"
 
 	"github.com/spf13/cobra"
 )
-
-
 
 var tmpl = template.Must(template.New("grpc json transcoder filter").Parse(`
 apiVersion: networking.istio.io/v1alpha3
@@ -37,6 +39,29 @@ spec:
       - {{ . }}{{end}}
 `))
 
+// getTetrateServices looks for "tetrate.xxx" package, and returns a list
+// of services found in each such package
+func getTetrateServices(b *[]byte) ([]string, error) {
+	var (
+		fds descriptor.FileDescriptorSet
+		svc []string
+	)
+
+	if err := proto.Unmarshal(*b, &fds); err != nil {
+		log.Fatalf("proto unmarshall to FileDescriptorSet error: %v", err)
+		return svc, err
+	}
+	for _, f := range fds.GetFile() {
+		m, _ := regexp.MatchString("tetrate.", f.GetPackage())
+		if m == true {
+			for _, s := range f.GetService() {
+				svc = append(svc, f.GetPackage()+"."+s.GetName())
+			}
+		}
+	}
+	return svc, nil
+}
+
 func main() {
 	var (
 		service            string
@@ -47,12 +72,18 @@ func main() {
 
 	cmd := &cobra.Command{
 		Short:   "gen-envoyfilter",
-		Example: "gen-envoyfilter --port 80 --service foo --proto-services foo.v1.Service,bar.v2.Service --descriptor ./path/to/descriptor",
+		Example: "gen-envoyfilter --port 80 --service foo --descriptor ./path/to/descriptor",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			descriptorBytes, err := ioutil.ReadFile(descriptorFilePath)
 			if err != nil {
 				return err
 			}
+
+			protoServices, err = getTetrateServices(&descriptorBytes)
+			if err != nil {
+				return err
+			}
+
 			encoded := base64.StdEncoding.EncodeToString(descriptorBytes)
 			params := map[string]interface{}{
 				"ServiceName":      service,
