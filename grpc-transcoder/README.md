@@ -4,7 +4,7 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
 
 ## Usage
 
-1. Build by binary via `make build` which creates a binary named `gen-grpc-transcoder`.
+1. Build by binary via `make build` which creates a binary named `gen-envoyfilter`.
   > Alternatively, use `go run github.com/tetratelabs/istio-tools/grpc-transcoder` and pass the same CLI arguments as we use in the other examples.
 
 1. Build your protobuf API definitions with [`protoc`](https://github.com/google/protobuf/releases), instructing the compiler to produce _descriptors_, a binary file that describes the runtime format of protobufs alongside their metadata. These descriptors are used to perform transocoding at runtime. Note that your gRPC service's need to use `google.api.http` options to describe their mapping to a REST API.
@@ -27,10 +27,10 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
 
 1. Note the port your gRPC server is running on; for our example we'll assume the gRPC server listens on port `9080`.
 
-1. Use `gen-grpc-transcoder` to generate your configuration for Istio:
+1. Use `gen-envoyfilter` to generate your configuration for Istio:
 
   ```sh
-gen-grpc-transcoder \
+gen-envoyfilter \
   --service foo \
   --proto-services=proto.package.name.Service \
   --descriptor=path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor \
