@@ -12,6 +12,8 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	descriptor "github.com/golang/protobuf/protoc-gen-go/descriptor"
+	"github.com/hashicorp/go-multierror"
+	"github.com/pkg/errors"
 
 	"github.com/spf13/cobra"
 )
@@ -46,14 +48,19 @@ func getServices(b *[]byte, packages []string, services []string) ([]string, err
 		fds  descriptor.FileDescriptorSet
 		out  []string
 		rexp []*regexp.Regexp
+		errs error
 	)
 	if err := proto.Unmarshal(*b, &fds); err != nil {
-		log.Fatalf("error proto unmarshall to FileDescriptorSet, %v", err)
-		return out, err
+		return out, errors.Wrapf(err, "error proto unmarshall to FileDescriptorSet")
 	}
 	rexp = make([]*regexp.Regexp, 0)
 	for _, r := range services {
-		rexp = append(rexp, regexp.MustCompile(r))
+		re, err := regexp.Compile(r)
+		if err != nil {
+			errs = multierror.Append(errs, err)
+		} else {
+			rexp = append(rexp, re)
+		}
 	}
 
 	// package
@@ -86,7 +93,7 @@ func getServices(b *[]byte, packages []string, services []string) ([]string, err
 			}
 		}
 	}
-	return out, nil
+	return out, errs
 }
 
 func main() {
@@ -116,6 +123,7 @@ func main() {
 
 			protoServices, err = getServices(&descriptorBytes, packages, services)
 			if err != nil {
+				log.Printf("error extracting services from descriptor: %v\n", err)
 				return err
 			}
 
@@ -131,11 +139,8 @@ func main() {
 	}
 
 	cmd.PersistentFlags().IntVarP(&port, "port", "p", 80, "Port that the HTTP/JSON -> gRPC transcoding filter should be attached to.")
-	cmd.PersistentFlags().StringVarP(&service, "service", "s", "",
+	cmd.PersistentFlags().StringVarP(&service, "service", "s", "grpc-transcoder",
 		"The value of the `app` label for EnvoyFilter's workloadLabels config; see https://github.com/istio/api/blob/master/networking/v1alpha3/envoy_filter.proto#L59-L68")
-	if service == "" {
-		service = "grpc-transcoder"
-	}
 	cmd.PersistentFlags().StringSliceVar(&packages, "packages", []string{},
 		"Comma separated list of the proto package prefix names contained in the descriptor files. These must be fully qualified names, i.e. package_name.package_prefix")
 	cmd.PersistentFlags().StringSliceVar(&services, "services", []string{},

@@ -13,12 +13,36 @@
   version = "v1.2.0"
 
 [[projects]]
+  digest = "1:0ade334594e69404d80d9d323445d2297ff8161637f9b2d347cc6973d2d6f05b"
+  name = "github.com/hashicorp/errwrap"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "8a6fb523712970c966eefc6b39ed2c5e74880354"
+  version = "v1.0.0"
+
+[[projects]]
+  digest = "1:f668349b83f7d779567c880550534addeca7ebadfdcf44b0b9c39be61864b4b7"
+  name = "github.com/hashicorp/go-multierror"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "886a7fbe3eb1c874d46f623bfa70af45f425b3d1"
+  version = "v1.0.0"
+
+[[projects]]
   digest = "1:870d441fe217b8e689d7949fef6e43efbc787e50f200cb1e70dbca9204a1d6be"
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
   pruneopts = "UT"
   revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
   version = "v1.0"
+
+[[projects]]
+  digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
 
 [[projects]]
   digest = "1:645cabccbb4fa8aab25a956cbcbdf6a6845ca736b2c64e197ca7cbb9d210b939"
@@ -42,6 +66,8 @@
   input-imports = [
     "github.com/golang/protobuf/proto",
     "github.com/golang/protobuf/protoc-gen-go/descriptor",
+    "github.com/hashicorp/go-multierror",
+    "github.com/pkg/errors",
     "github.com/spf13/cobra",
   ]
   solver-name = "gps-cdcl"
