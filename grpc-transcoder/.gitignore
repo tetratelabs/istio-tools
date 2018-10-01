@@ -1,2 +1,4 @@
 istio-*
 gen-grpc-transcoder
+gen-envoyfilter
+vendor
