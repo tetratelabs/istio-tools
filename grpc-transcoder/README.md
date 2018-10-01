@@ -19,7 +19,6 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
     --go_out=plugins=grpc:. \
     path/to/your/protos/service.proto
   ```
-  You'll need the path to the path to the 
   
 1. Note the fully qualified name of your gRPC service's protobuf, i.e. `proto.package.name.Service`.
 
@@ -32,7 +31,7 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
   ```sh
 gen-envoyfilter \
   --service foo \
-  --proto-services=proto.package.name.Service \
+  --services=proto.package.name.Service \
   --descriptor=path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor \
   --port 9080
   ```
