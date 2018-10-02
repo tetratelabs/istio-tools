@@ -19,7 +19,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var tmpl = template.Must(template.New("grpc json transcoder filter").Parse(`apiVersion: networking.istio.io/v1alpha3
+var tmpl = template.Must(template.New("grpc json transcoder filter").Parse(
+	`# Created by github.com/tetratelabs/istio-tools/grpc-transcoder
+apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
   name: {{ .ServiceName }}
@@ -30,7 +32,6 @@ spec:
   - listenerMatch:
       portNumber: {{ .PortNumber }} 
       listenerType: SIDECAR_INBOUND
-    # insert the transcoder filter before the HTTP router filter.
     insertPosition:
       index: BEFORE
       relativeTo: envoy.router
@@ -42,7 +43,8 @@ spec:
       protoDescriptorBin: {{ .DescriptorBinary }}
       printOptions:
         alwaysPrintPrimitiveFields: True
----`))
+---
+`))
 
 // getServices returns a list of matching services found in matching packages
 func getServices(b *[]byte, packages []string, services []string) ([]string, error) {
