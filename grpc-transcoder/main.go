@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -36,9 +37,11 @@ spec:
     filterName: envoy.grpc_json_transcoder
     filterType: HTTP
     filterConfig:
-      protoDescriptorBin: {{ .DescriptorBinary }}
       services: {{ range .ProtoServices }} 
       - {{ . }}{{end}}
+      protoDescriptorBin: {{ .DescriptorBinary }}
+      printOptions:
+        alwaysPrintPrimitiveFields: True
 ---`))
 
 // getServices returns a list of matching services found in matching packages
@@ -125,6 +128,7 @@ func main() {
 				log.Printf("error extracting services from descriptor: %v\n", err)
 				return err
 			}
+			sort.Strings(protoServices)
 
 			encoded := base64.StdEncoding.EncodeToString(descriptorBytes)
 			params := map[string]interface{}{
