@@ -36,8 +36,7 @@ spec:
     filterName: envoy.grpc_json_transcoder
     filterType: HTTP
     filterConfig:
-      protoDescriptorBin: !!binary |
-        {{ .DescriptorBinary }}
+      protoDescriptorBin: {{ .DescriptorBinary }}
       services: {{ range .ProtoServices }} 
       - {{ . }}{{end}}
 ---`))
