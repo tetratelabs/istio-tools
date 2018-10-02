@@ -30,7 +30,7 @@ spec:
     app: {{ .ServiceName }}
   filters:
   - listenerMatch:
-      portNumber: {{ .PortNumber }} 
+      portNumber: {{ .PortNumber }}
       listenerType: SIDECAR_INBOUND
     insertPosition:
       index: BEFORE
