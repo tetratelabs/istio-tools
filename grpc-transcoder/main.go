@@ -46,6 +46,9 @@ spec:
 ---
 `))
 
+// k8s CRDs only a megabyte of data; descriptors can be larger than this, and if they are they cannot be delivered.
+const megabyte = 1000000
+
 // getServices returns a list of matching services found in matching packages
 func getServices(b *[]byte, packages []string, services []string) ([]string, error) {
 	var (
@@ -123,6 +126,10 @@ func main() {
 			if err != nil {
 				log.Printf("error reading descriptor file %q\n", descriptorFilePath)
 				return err
+			}
+			// TODO: support outputting a file based CRD when descriptor is too large.
+			if len(descriptorBytes) > megabyte {
+				return fmt.Errorf("descriptor file is too large (%d bytes); CRDs cannot be larger than a megabyte", len(descriptorBytes))
 			}
 
 			protoServices, err = getServices(&descriptorBytes, packages, services)
