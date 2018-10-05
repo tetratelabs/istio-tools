@@ -20,7 +20,9 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
     path/to/your/protos/service.proto
   ```
   
-1. Note the fully qualified name of your gRPC service's protobuf, i.e. `proto.package.name.Service`.
+1. Note the fully qualified name of your gRPC service's protobuf, i.e. `proto.package.name.Service`. You may choose to provide prefix of matching package names e.g. `--packages proto.package`. If none provided, all packages will be chosen, and listed.
+
+1. You may choose to match services using comma-separated regular expressions e.g. `--services http.*,echo.*`. If none provided, all services will be chosen and listed.
 
 1. Find the `app` label of the Kubernetes Service you want to enable transcoding for. For our example, we'll assume our Kubernetes uses the label `app: foo`.
 
@@ -30,19 +32,21 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
 
   ```sh
 gen-envoyfilter \
-  --service foo \
-  --services=proto.package.name.Service \
-  --descriptor=path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor \
   --port 9080
+  [--service foo] \
+  [--packages proto.package.name] \
+  [--services='Service.*'] \
+  --descriptor=path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor
   ```
   
   Which will spit out config looking like:
   
   ```yaml
+# Created by github.com/tetratelabs/istio-tools/grpc-transcoder
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
-  name: foo-grpc-transcoder
+  name: foo
 spec:
   workloadLabels:
     app: foo
@@ -50,7 +54,6 @@ spec:
   - listenerMatch:
       portNumber: 9080 
       listenerType: SIDECAR_INBOUND
-    # insert the transcoder filter before the HTTP router filter.
     insertPosition:
       index: BEFORE
       relativeTo: envoy.router
@@ -60,7 +63,10 @@ spec:
       protoDescriptorBin: !!binary |
         <Base 64 Encoded String, the binary data inside of path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor>
       services:
-      - proto.package.name.Service
+      - proto.package.name.Service1
+      - proto.package.name.Service2
+    printOptions:
+      alwaysPrintPrimitiveFields: True
   ```
 
 #### TODO: full example including protos, k8s service + deployment definition showing full e2e setup
