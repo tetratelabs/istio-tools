@@ -60,8 +60,7 @@ spec:
     filterName: envoy.grpc_json_transcoder
     filterType: HTTP
     filterConfig:
-      protoDescriptorBin: !!binary |
-        <Base 64 Encoded String, the binary data inside of path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor>
+      protoDescriptorBin: <Base 64 Encoded String, the binary data inside of path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor>
       services:
       - proto.package.name.Service1
       - proto.package.name.Service2
