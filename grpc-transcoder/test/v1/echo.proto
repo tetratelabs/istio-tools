@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package test.v1;
+option go_package = "testv1";
+
+service EchoService {
+	rpc Echo(EchoRequest) returns (EchoResponse) {
+	};
+}
+
+message EchoRequest {
+	string id = 1;
+	bytes body = 2;
+}
+
+message EchoResponse {
+	string id = 1;
+	bytes body = 2;
+}

@@ -4,14 +4,14 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
 
 ## Usage
 
-1. Build by binary via `make build` which creates a binary named `gen-envoyfilter`.
+1. Build by binary via `make build` which creates a binary named `gen-transcoder`.
     > Alternatively, use `go run github.com/tetratelabs/istio-tools/grpc-transcoder` and pass the same CLI arguments as we use in the other examples.
 
 1. Build your protobuf API definitions with [`protoc`](https://github.com/google/protobuf/releases), instructing the compiler to produce _descriptors_, a binary file that describes the runtime format of protobufs alongside their metadata. These descriptors are used to perform transocoding at runtime. Note that your gRPC service's need to use `google.api.http` options to describe their mapping to a REST API.
 
     > [Google's Cloud Endpoints' documentation](https://cloud.google.com/endpoints/docs/grpc/transcoding) provides an overview of using these proto/gRPC features, as well as how generate descriptors.
   
-    ```sh
+    ```sh -c
     protoc \
       -I path/to/google/protobufs \
       -I path/to/your/protos \
@@ -29,17 +29,17 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
 
 1. Note the port your gRPC server is running on; for our example we'll assume the gRPC server listens on port `9080`.
 
-1. Use `gen-envoyfilter` to generate your configuration for Istio:
+1. Use `gen-transcoder` to generate your configuration for Istio:
 
-    ```sh
-    gen-envoyfilter \
-      --port 9080
+    ```sh -c \
+    gen-transcoder \
+      --port 9080 \
       [--service foo] \
       [--packages proto.package.name] \
-      [--services='Service.*'] \
-      --descriptor=path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor
+      [--services 'Service.*'] \
+      --descriptor path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor
     ```
-  
+
      Which will spit out config looking like:
   
     ```yaml
@@ -68,5 +68,41 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
           printOptions:
             alwaysPrintPrimitiveFields: True
     ```
+
+We have included two sample proto services, compiled into a single proto descriptor that you can use in the following way:
+
+    ```gen-transcoder \
+      --port 9080 \
+      --service echo \
+      --packages test.v1 \
+      --services 'Echo.*' \
+      --descriptor test/v1/onebig.proto-descriptor
+    ```
+
+     Which spits out config as below:
+
+# Created by github.com/tetratelabs/istio-tools/grpc-transcoder
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: echo
+spec:
+  workloadLabels:
+    app: echo
+  filters:
+  - listenerMatch:
+      portNumber: 9080
+      listenerType: SIDECAR_INBOUND
+    insertPosition:
+      index: BEFORE
+      relativeTo: envoy.router
+    filterName: envoy.grpc_json_transcoder
+    filterType: HTTP
+    filterConfig:
+      services:
+      - test.v1.EchoService
+      protoDescriptorBin: CoQCCgplY2hvLnByb3RvEgd0ZXN0LnYxIi0KB1JlcXVlc3QSDgoCaWQYASABKAlSAmlkEhIKBGJvZHkYAiABKAxSBGJvZHkiLgoIUmVzcG9uc2USDgoCaWQYASABKAlSAmlkEhIKBGJvZHkYAiABKAxSBGJvZHkyPAoLRWNob1NlcnZpY2USLQoERWNobxIQLnRlc3QudjEuUmVxdWVzdBoRLnRlc3QudjEuUmVzcG9uc2UiADI+Cg5Bbm90aGVyU2VydmljZRIsCgNHZXQSEC50ZXN0LnYxLlJlcXVlc3QaES50ZXN0LnYxLlJlc3BvbnNlIgBCCFoGdGVzdHYxYgZwcm90bzM=
+      printOptions:
+        alwaysPrintPrimitiveFields: True
 
 #### TODO: full example including protos, k8s service + deployment definition showing full e2e setup
