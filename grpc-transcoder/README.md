@@ -65,8 +65,8 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
           services:
           - proto.package.name.Service1
           - proto.package.name.Service2
-        printOptions:
-          alwaysPrintPrimitiveFields: True
+          printOptions:
+            alwaysPrintPrimitiveFields: True
     ```
 
 #### TODO: full example including protos, k8s service + deployment definition showing full e2e setup
