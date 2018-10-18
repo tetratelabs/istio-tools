@@ -5,20 +5,21 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
 ## Usage
 
 1. Build by binary via `make build` which creates a binary named `gen-envoyfilter`.
-  > Alternatively, use `go run github.com/tetratelabs/istio-tools/grpc-transcoder` and pass the same CLI arguments as we use in the other examples.
+    > Alternatively, use `go run github.com/tetratelabs/istio-tools/grpc-transcoder` and pass the same CLI arguments as we use in the other examples.
 
 1. Build your protobuf API definitions with [`protoc`](https://github.com/google/protobuf/releases), instructing the compiler to produce _descriptors_, a binary file that describes the runtime format of protobufs alongside their metadata. These descriptors are used to perform transocoding at runtime. Note that your gRPC service's need to use `google.api.http` options to describe their mapping to a REST API.
 
-  > [Google's Cloud Endpoints' documentation](https://cloud.google.com/endpoints/docs/grpc/transcoding) provides an overview of using these proto/gRPC features, as well as how generate descriptors.
+    > [Google's Cloud Endpoints' documentation](https://cloud.google.com/endpoints/docs/grpc/transcoding) provides an overview of using these proto/gRPC features, as well as how generate descriptors.
   
-  ```sh
-  protoc \
-    -I path/to/google/protobufs \
-    -I path/to/your/protos \
-    --descriptor_set_out=path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor --include_imports \
-    --go_out=plugins=grpc:. \
-    path/to/your/protos/service.proto
-  ```
+    ```sh
+    protoc \
+      -I path/to/google/protobufs \
+      -I path/to/your/protos \
+      --descriptor_set_out=path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor \
+      --include_imports \
+      --go_out=plugins=grpc:. \
+      path/to/your/protos/service.proto
+    ```
   
 1. Note the fully qualified name of your gRPC service's protobuf, i.e. `proto.package.name.Service`. You may choose to provide prefix of matching package names e.g. `--packages proto.package`. If none provided, all packages will be chosen, and listed.
 
@@ -30,42 +31,42 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
 
 1. Use `gen-envoyfilter` to generate your configuration for Istio:
 
-  ```sh
-gen-envoyfilter \
-  --port 9080
-  [--service foo] \
-  [--packages proto.package.name] \
-  [--services='Service.*'] \
-  --descriptor=path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor
-  ```
+    ```sh
+    gen-envoyfilter \
+      --port 9080
+      [--service foo] \
+      [--packages proto.package.name] \
+      [--services='Service.*'] \
+      --descriptor=path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor
+    ```
   
-  Which will spit out config looking like:
+     Which will spit out config looking like:
   
-  ```yaml
-# Created by github.com/tetratelabs/istio-tools/grpc-transcoder
-apiVersion: networking.istio.io/v1alpha3
-kind: EnvoyFilter
-metadata:
-  name: foo
-spec:
-  workloadLabels:
-    app: foo
-  filters:
-  - listenerMatch:
-      portNumber: 9080 
-      listenerType: SIDECAR_INBOUND
-    insertPosition:
-      index: BEFORE
-      relativeTo: envoy.router
-    filterName: envoy.grpc_json_transcoder
-    filterType: HTTP
-    filterConfig:
-      protoDescriptorBin: <Base 64 Encoded String, the binary data inside of path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor>
-      services:
-      - proto.package.name.Service1
-      - proto.package.name.Service2
-    printOptions:
-      alwaysPrintPrimitiveFields: True
-  ```
+    ```yaml
+    # Created by github.com/tetratelabs/istio-tools/grpc-transcoder
+    apiVersion: networking.istio.io/v1alpha3
+    kind: EnvoyFilter
+    metadata:
+      name: foo
+    spec:
+      workloadLabels:
+        app: foo
+      filters:
+      - listenerMatch:
+          portNumber: 9080 
+          listenerType: SIDECAR_INBOUND
+        insertPosition:
+          index: BEFORE
+          relativeTo: envoy.router
+        filterName: envoy.grpc_json_transcoder
+        filterType: HTTP
+        filterConfig:
+          protoDescriptorBin: <Base 64 Encoded String, the binary data inside of path/to/output/dir/YOUR_SERVICE_NAME.proto-descriptor>
+          services:
+          - proto.package.name.Service1
+          - proto.package.name.Service2
+          printOptions:
+            alwaysPrintPrimitiveFields: True
+    ```
 
 #### TODO: full example including protos, k8s service + deployment definition showing full e2e setup
