@@ -69,14 +69,14 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
             alwaysPrintPrimitiveFields: True
     ```
 
-We have included two sample proto services, compiled into a single proto descriptor that you can use in the following way:
+We have included a few sample proto services, compiled into a single proto descriptor that you can use in the following way:
 
     ```gen-transcoder \
       --port 9080 \
       --service echo \
-      --packages test.v1 \
+      --packages proto \
       --services 'Echo.*' \
-      --descriptor test/v1/onebig.proto-descriptor
+      --descriptor proto/onebig.proto-descriptor
     ```
 
      Which spits out config as below:
@@ -100,8 +100,8 @@ spec:
     filterType: HTTP
     filterConfig:
       services:
-      - test.v1.EchoService
-      protoDescriptorBin: CoQCCgplY2hvLnByb3RvEgd0ZXN0LnYxIi0KB1JlcXVlc3QSDgoCaWQYASABKAlSAmlkEhIKBGJvZHkYAiABKAxSBGJvZHkiLgoIUmVzcG9uc2USDgoCaWQYASABKAlSAmlkEhIKBGJvZHkYAiABKAxSBGJvZHkyPAoLRWNob1NlcnZpY2USLQoERWNobxIQLnRlc3QudjEuUmVxdWVzdBoRLnRlc3QudjEuUmVzcG9uc2UiADI+Cg5Bbm90aGVyU2VydmljZRIsCgNHZXQSEC50ZXN0LnYxLlJlcXVlc3QaES50ZXN0LnYxLlJlc3BvbnNlIgBCCFoGdGVzdHYxYgZwcm90bzM=
+      - proto.EchoService
+      protoDescriptorBin: Cs0BCgplY2hvLnByb3RvEgVwcm90byIxCgtFY2hvUmVxdWVzdBIOCgJpZBgBIAEoCVICaWQSEgoEYm9keRgCIAEoDFIEYm9keSIyCgxFY2hvUmVzcG9uc2USDgoCaWQYASABKAlSAmlkEhIKBGJvZHkYAiABKAxSBGJvZHkyQAoLRWNob1NlcnZpY2USMQoERWNobxISLnByb3RvLkVjaG9SZXF1ZXN0GhMucHJvdG8uRWNob1Jlc3BvbnNlIgBCB1oFcHJvdG9iBnByb3RvMwrvAQoQaGVsbG93b3JsZC5wcm90bxIKaGVsbG93b3JsZCIiCgxIZWxsb1JlcXVlc3QSEgoEbmFtZRgBIAEoCVIEbmFtZSImCgpIZWxsb1JlcGx5EhgKB21lc3NhZ2UYASABKAlSB21lc3NhZ2UySQoHR3JlZXRlchI+CghTYXlIZWxsbxIYLmhlbGxvd29ybGQuSGVsbG9SZXF1ZXN0GhYuaGVsbG93b3JsZC5IZWxsb1JlcGx5IgBCMAobaW8uZ3JwYy5leGFtcGxlcy5oZWxsb3dvcmxkQg9IZWxsb1dvcmxkUHJvdG9QAWIGcHJvdG8zCswBCgp0ZXN0LnByb3RvEgVwcm90byIxCgtUZXN0UmVxdWVzdBIOCgJpZBgBIAEoCVICaWQSEgoEYm9keRgCIAEoDFIEYm9keSIyCgxUZXN0UmVzcG9uc2USDgoCaWQYASABKAlSAmlkEhIKBGJvZHkYAiABKAxSBGJvZHkyPwoLVGVzdFNlcnZpY2USMAoDR2V0EhIucHJvdG8uVGVzdFJlcXVlc3QaEy5wcm90by5UZXN0UmVzcG9uc2UiAEIHWgVwcm90b2IGcHJvdG8z
       printOptions:
         alwaysPrintPrimitiveFields: True
 

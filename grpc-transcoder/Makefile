@@ -1,10 +1,10 @@
-TEST_DIR := test/v1
+PROTO_DIR := protos
 
 build: dep
 	@go build -o gen-transcoder main.go
 
 proto:
-	@$(MAKE) -C $(TEST_DIR) all
+	@$(MAKE) -C $(PROTO_DIR) all
 
 dep:
 	@dep ensure
@@ -13,7 +13,7 @@ all: proto build
 	@echo "Done $@"
 
 clean:
-	@$(MAKE) -C $(TEST_DIR) $@
+	@$(MAKE) -C $(PROTO_DIR) $@
 	@rm -f gen-transcoder
 	@echo "Done $@"
 
