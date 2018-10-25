@@ -70,7 +70,7 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
     ```
 -------
 
-We have included a few [sample proto services](/protos), compiled into a single proto descriptor that you can use in the following way:
+We have included a few [sample proto services](/grpc-transcoder/protos), compiled into a single proto descriptor that you can use in the following way:
 
 ```sh
 gen-transcoder \
