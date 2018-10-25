@@ -114,8 +114,8 @@ func main() {
 	)
 
 	cmd := &cobra.Command{
-		Short:   "gen-envoyfilter",
-		Example: "gen-envoyfilter [--port 80] [--service foo] [--packages acme.example] [--services 'http.*,echo.*'] --descriptor /path/to/descriptor",
+		Short:   "gen-transcoder",
+		Example: "gen-transcoder [--port 80] [--service foo] [--packages acme.example] [--services 'http.*,echo.*'] --descriptor /path/to/descriptor",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if _, err := os.Stat(descriptorFilePath); os.IsNotExist(err) {
 				log.Printf("error opening descriptor file %q\n", descriptorFilePath)

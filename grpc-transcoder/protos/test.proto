@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package proto;
+option go_package = "proto";
+
+service TestService {
+	rpc Get(TestRequest) returns (TestResponse) {
+	};
+}
+
+message TestRequest {
+	string id = 1;
+	bytes body = 2;
+}
+
+message TestResponse {
+	string id = 1;
+	bytes body = 2;
+}

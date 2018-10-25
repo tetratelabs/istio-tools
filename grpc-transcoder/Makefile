@@ -1,10 +1,20 @@
-default: build
+PROTO_DIR := protos
+
+build: dep
+	@go build -o gen-transcoder main.go
+
+proto:
+	@$(MAKE) -C $(PROTO_DIR) all
 
 dep:
 	@dep ensure
 
-build: dep
-	@go build -o gen-envoyfilter main.go
+all: proto build
+	@echo "Done $@"
 
 clean:
-	@rm -f gen-envoyfilter
+	@$(MAKE) -C $(PROTO_DIR) $@
+	@rm -f gen-transcoder
+	@echo "Done $@"
+
+.PHONY: all

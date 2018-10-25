@@ -1,5 +1,5 @@
 istio-*
 gen-grpc-transcoder
-gen-envoyfilter
+gen-transcoder
 vendor
 .idea
