@@ -11,7 +11,7 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
 
     > [Google's Cloud Endpoints' documentation](https://cloud.google.com/endpoints/docs/grpc/transcoding) provides an overview of using these proto/gRPC features, as well as how generate descriptors.
   
-    ```sh -c
+    ```sh
     protoc \
       -I path/to/google/protobufs \
       -I path/to/your/protos \
@@ -31,7 +31,7 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
 
 1. Use `gen-transcoder` to generate your configuration for Istio:
 
-    ```sh -c \
+    ```sh
     gen-transcoder \
       --port 9080 \
       [--service foo] \
@@ -68,19 +68,22 @@ A simple utility to generate an Istio [EnvoyFilter](https://preliminary.istio.io
           printOptions:
             alwaysPrintPrimitiveFields: True
     ```
+-------
 
-We have included a few sample proto services, compiled into a single proto descriptor that you can use in the following way:
+We have included a few [sample proto services](/grpc-transcoder/protos), compiled into a single proto descriptor that you can use in the following way:
 
-    ```gen-transcoder \
-      --port 9080 \
-      --service echo \
-      --packages proto \
-      --services 'Echo.*' \
-      --descriptor proto/onebig.proto-descriptor
-    ```
+```sh
+gen-transcoder \
+  --port 9080 \
+  --service echo \
+  --packages proto \
+  --services 'Echo.*' \
+  --descriptor proto/onebig.proto-descriptor
+```
 
-     Which spits out config as below:
+Which spits out the config below:
 
+```yaml
 # Created by github.com/tetratelabs/istio-tools/grpc-transcoder
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
@@ -104,5 +107,6 @@ spec:
       protoDescriptorBin: Cs0BCgplY2hvLnByb3RvEgVwcm90byIxCgtFY2hvUmVxdWVzdBIOCgJpZBgBIAEoCVICaWQSEgoEYm9keRgCIAEoDFIEYm9keSIyCgxFY2hvUmVzcG9uc2USDgoCaWQYASABKAlSAmlkEhIKBGJvZHkYAiABKAxSBGJvZHkyQAoLRWNob1NlcnZpY2USMQoERWNobxISLnByb3RvLkVjaG9SZXF1ZXN0GhMucHJvdG8uRWNob1Jlc3BvbnNlIgBCB1oFcHJvdG9iBnByb3RvMwrvAQoQaGVsbG93b3JsZC5wcm90bxIKaGVsbG93b3JsZCIiCgxIZWxsb1JlcXVlc3QSEgoEbmFtZRgBIAEoCVIEbmFtZSImCgpIZWxsb1JlcGx5EhgKB21lc3NhZ2UYASABKAlSB21lc3NhZ2UySQoHR3JlZXRlchI+CghTYXlIZWxsbxIYLmhlbGxvd29ybGQuSGVsbG9SZXF1ZXN0GhYuaGVsbG93b3JsZC5IZWxsb1JlcGx5IgBCMAobaW8uZ3JwYy5leGFtcGxlcy5oZWxsb3dvcmxkQg9IZWxsb1dvcmxkUHJvdG9QAWIGcHJvdG8zCswBCgp0ZXN0LnByb3RvEgVwcm90byIxCgtUZXN0UmVxdWVzdBIOCgJpZBgBIAEoCVICaWQSEgoEYm9keRgCIAEoDFIEYm9keSIyCgxUZXN0UmVzcG9uc2USDgoCaWQYASABKAlSAmlkEhIKBGJvZHkYAiABKAxSBGJvZHkyPwoLVGVzdFNlcnZpY2USMAoDR2V0EhIucHJvdG8uVGVzdFJlcXVlc3QaEy5wcm90by5UZXN0UmVzcG9uc2UiAEIHWgVwcm90b2IGcHJvdG8z
       printOptions:
         alwaysPrintPrimitiveFields: True
+```
 
 #### TODO: full example including protos, k8s service + deployment definition showing full e2e setup
