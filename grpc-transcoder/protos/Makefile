@@ -20,6 +20,8 @@ DESCRIPTOR = onebig.proto-descriptor
 $(DESCRIPTOR): $(PROTO_GO_SOURCES)
 ${PROTO_GO_SOURCES}: ${PROTO_SOURCES}
 	@protoc \
+		-I ./ \
+		-I third_party/ \
 		--go_out=plugins=grpc:. \
 		--descriptor_set_out=$(DESCRIPTOR) --include_imports \
 		$?

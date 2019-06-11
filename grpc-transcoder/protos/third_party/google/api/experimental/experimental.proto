@@ -1,4 +1,4 @@
-// Copyright 2015 gRPC authors.
+// Copyright 2018 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,28 +14,21 @@
 
 syntax = "proto3";
 
-package helloworld;
+package google.api;
 
 import "google/api/annotations.proto";
+import "google/api/experimental/authorization_config.proto";
 
+option go_package = "google.golang.org/genproto/googleapis/api;api";
 option java_multiple_files = true;
-option java_package = "io.grpc.examples.helloworld";
-option java_outer_classname = "HelloWorldProto";
+option java_outer_classname = "ExperimentalProto";
+option java_package = "com.google.api";
+option objc_class_prefix = "GAPI";
 
-// The greeting service definition.
-service Greeter {
-  // Sends a greeting
-  rpc SayHello (HelloRequest) returns (HelloReply) {
-    option (google.api.http).get = "/hello/{name}";
-  }
-}
 
-// The request message containing the user's name.
-message HelloRequest {
-  string name = 1;
-}
-
-// The response message containing the greetings
-message HelloReply {
-  string message = 1;
+// Experimental service configuration. These configuration options can
+// only be used by whitelisted users.
+message Experimental {
+  // Authorization configuration.
+  AuthorizationConfig authorization = 8;
 }
