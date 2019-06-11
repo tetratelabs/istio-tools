@@ -17,8 +17,14 @@ syntax = "proto3";
 package proto;
 option go_package = "proto";
 
+import "google/api/annotations.proto";
+
 service EchoService {
 	rpc Echo(EchoRequest) returns (EchoResponse) {
+		option (google.api.http) = {
+			post: "/echo"
+			body: "*"
+		};
 	};
 }
 
