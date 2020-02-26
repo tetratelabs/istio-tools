@@ -1,0 +1,12 @@
+# sidecar-ingress-ns.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: Sidecar
+metadata:
+  name: ingress
+  namespace: ingress
+spec:
+  egress:
+    - hosts:
+        - "default/*"
+        # tripping hazard: make sure you include istio-system!
+        - "istio-system/*"
