@@ -10,19 +10,18 @@ Istio release version 1.4.2 is used for the exercise
 export ISTIO_VERSION=1.4.2; curl -L https://istio.io/downloadIstio | sh -
 ```
 ## Deploy Istio
-1. Deploy istio components using the [istio operator api](https://istio.io/blog/2019/introducing-istio-operator/) through `istioctl` commands.
+1. Deploy istio components using the [istio operator api](https://istio.io/blog/2019/introducing-istio-operator/)
 Note the usage of `--set` flags to enable mtls and controlPlaneSecurity in the istio mesh to deploy
 ```shell script
 ./istio-1.4.2/bin/istioctl manifest apply \
 	--set values.global.mtls.enabled=true \
 	--set values.global.controlPlaneSecurityEnabled=true
 ```
-2. Wait for all istio components to be ready
-1. check statuses of all istio pods
+2. check statuses of all istio pods and wait for all istio components to be ready
 ```shell script
 kubectl get pods -n istio-system
 ```
-2. expected output should look like:
+expected output should look like:
 ```shell script
 NAME                                      READY   STATUS    RESTARTS   AGE
 istio-citadel-6dc789bc4c-chdkb            1/1     Running   0          104s
