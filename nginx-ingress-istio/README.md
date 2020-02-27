@@ -5,7 +5,7 @@
 gcloud container clusters create -m n1-standard-2 ingress-test
 ```
 ## Download istio release
-Istio release of version 1.4.2 is used for the exercise
+Istio release version 1.4.2 is used for the exercise
 ```shell script
 export ISTIO_VERSION=1.4.2; curl -L https://istio.io/downloadIstio | sh -
 ```
