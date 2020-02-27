@@ -41,9 +41,21 @@ kubectl apply -f ./istio-1.4.2/samples/httpbin/httpbin.yaml
 ```
 
 ## Set up nginx ingress proxy in the default namespace
+1. Deploy relevant components
 ```shell script
 export KUBE_API_SERVER_IP=$(kubectl get svc kubernetes -o jsonpath='{.spec.clusterIP}')/32
 sed "s#__KUBE_API_SERVER_IP__#${KUBE_API_SERVER_IP}#" nginx-default-ns.yaml | kubectl apply -f -
+```
+2. Verify statuses of all pods in the default namespace
+```shell script
+kubectl get pods
+```
+The expected output should look like:
+```shell script
+NAME                                          READY   STATUS    RESTARTS   AGE
+httpbin-64776bf78d-gq4p6                      2/2     Running   0          40s
+nginx-default-http-backend-69cfc8f96b-kszcp   2/2     Running   0          27s
+nginx-ingress-controller-d464877d4-bmgt9      2/2     Running   0          28s
 ```
 
 ## Set up nginx ingress proxy in the ingress namespace
@@ -60,6 +72,16 @@ kubectl apply -f ingress-ingress-ns.yaml
 3. Create sidecar resource to allow traffic from pods in ingress namespace to pods in default namespace
 ```shell script
 kubectl apply -f sidecar-ingress-ns.yaml
+```
+4. Verify statuses of all pods in the ingress namespace
+```shell script
+kubectl get pods -n ingress
+```
+The expected output should look like:
+```shell script
+NAME                                          READY   STATUS    RESTARTS   AGE
+nginx-default-http-backend-69cfc8f96b-27hfq   2/2     Running   0          24s
+nginx-ingress-controller-d464877d4-wlnzt      2/2     Running   0          24s
 ```
 
 ## Verify that external traffic can be routed to the httpbin service from the nginx ingress in both the default and the ingress namespaces
@@ -98,7 +120,7 @@ curl $(kubectl get svc -n ingress ingress-nginx -o jsonpath='{.status.loadBalanc
 ```
 
 ## Verify that the httpbin service does not receive traffic in plaintext
-1. Deploy sleep application outside the istio mesh (without sidecar) and wait for sleep pods to be ready
+1. Deploy sleep application outside the istio mesh (without sidecar) and wait for the sleep pod to be ready
 ```shell script
 kubectl create namespace legacy
 kubectl apply -f ./istio-1.4.2/samples/sleep/sleep.yaml -n legacy
