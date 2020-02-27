@@ -10,13 +10,31 @@ Istio release of version 1.4.2 is used for the exercise
 export ISTIO_VERSION=1.4.2; curl -L https://istio.io/downloadIstio | sh -
 ```
 ## Deploy Istio
-Deploy istio components using the [istio operator api](https://istio.io/blog/2019/introducing-istio-operator/) through `istioctl` commands.
+1. Deploy istio components using the [istio operator api](https://istio.io/blog/2019/introducing-istio-operator/) through `istioctl` commands.
 Note the usage of `--set` flags to enable mtls and controlPlaneSecurity in the istio mesh to deploy
 ```shell script
 ./istio-1.4.2/bin/istioctl manifest apply \
 	--set values.global.mtls.enabled=true \
 	--set values.global.controlPlaneSecurityEnabled=true
 ```
+2. Wait for all istio components to be ready
+1. check statuses of all istio pods
+```shell script
+kubectl get pods -n istio-system
+```
+2. expected output should look like:
+```shell script
+NAME                                      READY   STATUS    RESTARTS   AGE
+istio-citadel-6dc789bc4c-chdkb            1/1     Running   0          104s
+istio-galley-78989484fd-przvl             2/2     Running   0          103s
+istio-ingressgateway-7c6c65958-lv8kh      1/1     Running   0          103s
+istio-pilot-66bf767468-5r94m              2/2     Running   0          103s
+istio-policy-84667d9ff8-hhzw7             2/2     Running   1          104s
+istio-sidecar-injector-7d65c79dd5-7dtrg   1/1     Running   0          102s
+istio-telemetry-5dd48bb8bc-24m8d          2/2     Running   2          103s
+prometheus-586d4445c7-22vhb               1/1     Running   0          103s
+```
+
 ## Deploy Sample httpbin application
 ```shell script
 kubectl label namespace default istio-injection=enabled
@@ -81,16 +99,22 @@ curl $(kubectl get svc -n ingress ingress-nginx -o jsonpath='{.status.loadBalanc
 ```
 
 ## Verify that the httpbin service does not receive traffic in plaintext
-1. Deploy sleep application outside the istio mesh (without sidecar)
+1. Deploy sleep application outside the istio mesh (without sidecar) and wait for sleep pods to be ready
 ```shell script
 kubectl create namespace legacy
-kubectl apply -f ./istio-1.4.4/samples/sleep/sleep.yaml -n legacy
+kubectl apply -f ./istio-1.4.2/samples/sleep/sleep.yaml -n legacy
+kubectl get pods -n legacy
+```
+expected output should look something like:
+```shell script
+NAME                     READY   STATUS    RESTARTS   AGE
+sleep-666475687f-wx2xp   1/1     Running   0          37s
 ```
 2. Curl httpbin service from the sleep pod
 ```shell script
 kubectl exec -it $(kubectl get pod -n legacy -l app=sleep -o jsonpath='{.items[0].metadata.name}') -n legacy -- curl httpbin.default.svc.cluster.local:8000/ip -v
 ```
-3. Expected output
+3. Expected output should look like:
 ```shell script
 * Expire in 0 ms for 6 (transfer 0x55d92c811680)
 ......
@@ -111,12 +135,12 @@ command terminated with exit code 56
 ```
 
 ## Verify that the connection between nginx-ingress-controller and httpbin service are mtls enabled
-1. Use `istioctl` to verify authentication policy between the httpbin service and ngress-nginx pods from both namespaces
+1. Use `istioctl` to verify the authentication policies between the httpbin service and nginx-ingress pods
 ```shell script
 ./istio-1.4.2/bin/istioctl authn tls-check $(kubectl get pod -n default -l app=ingress-nginx -o jsonpath='{.items[0].metadata.name}') httpbin.default.svc.cluster.local
 ./istio-1.4.2/bin/istioctl authn tls-check -n ingress $(kubectl get pod -n ingress -l app=ingress-nginx -o jsonpath='{.items[0].metadata.name}') httpbin.default.svc.cluster.local
 ```
-2. Expected output for both
+2. Expected output for both should look like:
 ```shell script
 HOST:PORT                                  STATUS     SERVER     CLIENT           AUTHN POLICY     DESTINATION RULE
 httpbin.default.svc.cluster.local:8000     OK         STRICT     ISTIO_MUTUAL     /default         istio-system/default
