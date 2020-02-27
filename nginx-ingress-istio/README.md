@@ -1,4 +1,4 @@
-# Using Istio with Nginx Ingress Controller
+# Using Nginx Ingress Controller in Istio
 
 ## Create Cluster
 ```shell script
