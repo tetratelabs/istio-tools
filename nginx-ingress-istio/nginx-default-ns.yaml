@@ -279,9 +279,6 @@ metadata:
   namespace: default
   labels:
     app: nginx-default-http-backend
-    # rewrite kubelet's probe request to pilot agent to prevent health check failure under mtls
-    annotations:
-      sidecar.istio.io/rewriteAppHTTPProbers: "true"
 spec:
   replicas: 1
   selector:
@@ -291,6 +288,9 @@ spec:
     metadata:
       labels:
         app: nginx-default-http-backend
+      # rewrite kubelet's probe request to pilot agent to prevent health check failure under mtls
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       terminationGracePeriodSeconds: 60
       containers:
