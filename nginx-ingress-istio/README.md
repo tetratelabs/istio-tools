@@ -21,7 +21,7 @@ Note the usage of `--set` flags to enable mtls and controlPlaneSecurity in the i
 ```shell script
 kubectl get pods -n istio-system
 ```
-expected output should look like:
+the expected output should look like:
 ```shell script
 NAME                                      READY   STATUS    RESTARTS   AGE
 istio-citadel-6dc789bc4c-chdkb            1/1     Running   0          104s
@@ -71,7 +71,7 @@ curl $(kubectl get svc -n default ingress-nginx -o jsonpath='{.status.loadBalanc
 ```shell script
 curl $(kubectl get svc -n ingress ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/ip -v
 ```
-3. Expected response for both curl requests should look like:
+3. The expected responses for both curl requests should look like:
 ```shell script
 *   Trying 34.83.167.92...
 * TCP_NODELAY set
@@ -104,7 +104,7 @@ kubectl create namespace legacy
 kubectl apply -f ./istio-1.4.2/samples/sleep/sleep.yaml -n legacy
 kubectl get pods -n legacy
 ```
-expected output should look something like:
+The expected output should look something like:
 ```shell script
 NAME                     READY   STATUS    RESTARTS   AGE
 sleep-666475687f-wx2xp   1/1     Running   0          37s
@@ -113,7 +113,7 @@ sleep-666475687f-wx2xp   1/1     Running   0          37s
 ```shell script
 kubectl exec -it $(kubectl get pod -n legacy -l app=sleep -o jsonpath='{.items[0].metadata.name}') -n legacy -- curl httpbin.default.svc.cluster.local:8000/ip -v
 ```
-3. Expected output should look like:
+3. The expected output should look like:
 ```shell script
 * Expire in 0 ms for 6 (transfer 0x55d92c811680)
 ......
@@ -139,7 +139,7 @@ command terminated with exit code 56
 ./istio-1.4.2/bin/istioctl authn tls-check $(kubectl get pod -n default -l app=ingress-nginx -o jsonpath='{.items[0].metadata.name}') httpbin.default.svc.cluster.local
 ./istio-1.4.2/bin/istioctl authn tls-check -n ingress $(kubectl get pod -n ingress -l app=ingress-nginx -o jsonpath='{.items[0].metadata.name}') httpbin.default.svc.cluster.local
 ```
-2. Expected output for both should look like:
+2. The expected output for both should look like:
 ```shell script
 HOST:PORT                                  STATUS     SERVER     CLIENT           AUTHN POLICY     DESTINATION RULE
 httpbin.default.svc.cluster.local:8000     OK         STRICT     ISTIO_MUTUAL     /default         istio-system/default
