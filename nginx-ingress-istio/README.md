@@ -15,7 +15,8 @@ Note the usage of `--set` flags to enable mtls and controlPlaneSecurity in the i
 ```shell script
 ./istio-1.4.2/bin/istioctl manifest apply \
 	--set values.global.mtls.enabled=true \
-	--set values.global.controlPlaneSecurityEnabled=true
+	--set values.global.controlPlaneSecurityEnabled=true \
+	--set values.global.proxy.accessLogFile="/dev/stdout"
 ```
 2. check statuses of all istio pods and wait for all istio components to be ready
 ```shell script
@@ -63,7 +64,7 @@ nginx-ingress-controller-d464877d4-bmgt9      2/2     Running   0          28s
 ```shell script
 kubectl create namespace ingress
 kubectl label namespace ingress istio-injection=enabled
-sed "s#__KUBE_API_SERVER_IP__#${KUBE_API_SERVER_IP}#" nginx-ingress-ns.yaml | kubectl apply -f -
+sed "s#__KUBE_API_SERVER_IP__#${KUBE_API_SERVER_IP}#" nginx-ingress-ns.yaml | kubectl apply -n ingress -f -
 ```
 2. Create ingress resource routing to httpbin
 ```shell script
